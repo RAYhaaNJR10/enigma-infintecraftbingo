@@ -5,17 +5,18 @@ import { useEffect, useState } from 'react';
 interface TimerProps {
     startTime: number; // timestamp
     duration: number; // ms
+    bonusTime?: number; // ms - bonus time added (e.g. for line completions)
     onExpire?: () => void;
 }
 
-export default function Timer({ startTime, duration, onExpire }: TimerProps) {
+export default function Timer({ startTime, duration, bonusTime = 0, onExpire }: TimerProps) {
     const [timeLeft, setTimeLeft] = useState(0);
 
     useEffect(() => {
         const interval = setInterval(() => {
             const now = Date.now();
             const elapsed = now - startTime;
-            const remaining = Math.max(0, duration - elapsed);
+            const remaining = Math.max(0, (duration + bonusTime) - elapsed);
 
             setTimeLeft(remaining);
 
@@ -26,7 +27,7 @@ export default function Timer({ startTime, duration, onExpire }: TimerProps) {
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [startTime, duration, onExpire]);
+    }, [startTime, duration, bonusTime, onExpire]);
 
     const formatTime = (ms: number) => {
         const totalSeconds = Math.floor(ms / 1000);

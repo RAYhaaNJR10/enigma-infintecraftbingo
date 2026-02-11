@@ -36,6 +36,7 @@ export default function GamePage() {
     const [showEndAttemptConfirm, setShowEndAttemptConfirm] = useState(false);
     const [showLineMessage, setShowLineMessage] = useState(false);
     const [lastLineCount, setLastLineCount] = useState(0);
+    const [bonusTime, setBonusTime] = useState(0);
 
     useEffect(() => {
         const teamId = localStorage.getItem('enigma_team_id');
@@ -66,6 +67,8 @@ export default function GamePage() {
                         });
 
                         if (linesFound > lastLineCount) {
+                            const newLines = linesFound - lastLineCount;
+                            setBonusTime(prev => prev + newLines * 10000);
                             setShowLineMessage(true);
                             setTimeout(() => setShowLineMessage(false), 3000);
                             confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
@@ -184,7 +187,7 @@ export default function GamePage() {
     }
 
     // ACTIVE GAME
-    const isExpired = team.startTime && (Date.now() - team.startTime > gameState.duration);
+    const isExpired = team.startTime && (Date.now() - team.startTime > gameState.duration + bonusTime);
     const isEnded = team.endTime || team.completedAt || isExpired;
 
     return (
@@ -193,7 +196,7 @@ export default function GamePage() {
             {showLineMessage && !team.completedAt && (
                 <div className="fixed top-24 z-50 animate-in slide-in-from-top-4 fade-in duration-300 pointer-events-none">
                     <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold px-6 py-3 rounded-full shadow-lg flex items-center gap-2">
-                        <Sparkles className="w-5 h-5" /> LINE COMPLETED!
+                        <Sparkles className="w-5 h-5" /> LINE COMPLETED! +10s BONUS!
                     </div>
                 </div>
             )}
@@ -206,7 +209,7 @@ export default function GamePage() {
                 </div>
 
                 {!isEnded && team.startTime && (
-                    <Timer startTime={team.startTime} duration={gameState.duration} onExpire={() => { }} />
+                    <Timer startTime={team.startTime} duration={gameState.duration} bonusTime={bonusTime} onExpire={() => { }} />
                 )}
                 {isExpired && !team.completedAt && <div className="text-red-500 font-bold text-2xl">TIME UP</div>}
 
