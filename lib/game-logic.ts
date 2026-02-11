@@ -1,14 +1,10 @@
 export const BINGO_CONCEPTS = [
-    "Binary Search", "Recursion", "Big O Notation", "Hash Map", "Linked List",
-    "Stack", "Queue", "Graph", "Tree", "Dynamic Programming",
-    "Sorting Algorithm", "API", "Database", "SQL", "NoSQL",
-    "Git", "Docker", "Kubernetes", "Cloud Computing", "Machine Learning",
-    "Neural Network", "Blockchain", "Cybersecurity", "Encryption", "Firewall",
-    "HTML", "CSS", "JavaScript", "React", "Node.js",
-    "Python", "Java", "C++", "Compiler", "Interpreter",
-    "Debugging", "Unit Testing", "Agile", "Scrum", "DevOps",
-    "REST", "GraphQL", "WebSockets", "Microservices", "Serverless",
-    "Virtual Machine", "Operating System", "Linux", "Network Protocol", "HTTP"
+    "Rainbow", "Electricity", "Jack Sparrow", "Penguin", "King Kong",
+    "Metal", "Human", "Coffin", "Plant", "Energy",
+    "Steam Engine", "Yin Yang", "Phoenix", "Mountain", "Titanic",
+    "Dragon", "Computer", "Game of Thrones", "Time Travel", "Music",
+    "Pizza", "Robot", "Universe", "Crypto Love", "Amazon",
+    "Artificial Intelligence", "Space Station"
 ];
 
 export function generateBingoCard() {
