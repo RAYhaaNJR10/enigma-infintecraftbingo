@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, CheckCircle, Clock, Trash2, RotateCcw, Home, PlayCircle, Edit2, X, Eye } from "lucide-react";
+import { Users, CheckCircle, Clock, Trash2, RotateCcw, Home, PlayCircle, Edit2, X, Eye, Lock, ShieldCheck } from "lucide-react";
+
+const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "691306";
 
 type Team = {
     id: string;
@@ -15,13 +17,26 @@ type Team = {
 };
 
 export default function AdminPage() {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [passwordInput, setPasswordInput] = useState("");
+    const [authError, setAuthError] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
     const [teams, setTeams] = useState<Team[]>([]);
     const [showResetConfirm, setShowResetConfirm] = useState(false);
-    const [editingTeam, setEditingTeam] = useState<Team | null>(null); // For Edit Modal
-    const [viewingTeam, setViewingTeam] = useState<Team | null>(null); // For View Members Modal
+    const [editingTeam, setEditingTeam] = useState<Team | null>(null);
+    const [viewingTeam, setViewingTeam] = useState<Team | null>(null);
 
-    // For Edit Input
     const [newName, setNewName] = useState("");
+
+    // Check sessionStorage on mount
+    useEffect(() => {
+        const stored = sessionStorage.getItem("enigma_admin_auth");
+        if (stored === "true") {
+            setIsAuthenticated(true);
+        }
+        setIsLoading(false);
+    }, []);
 
     const fetchState = async () => {
         try {
@@ -34,10 +49,83 @@ export default function AdminPage() {
     };
 
     useEffect(() => {
+        if (!isAuthenticated) return;
         fetchState();
-        const interval = setInterval(fetchState, 3000); // 3s polling
+        const interval = setInterval(fetchState, 3000);
         return () => clearInterval(interval);
-    }, []);
+    }, [isAuthenticated]);
+
+    const handleLogin = () => {
+        if (passwordInput === ADMIN_PASSWORD) {
+            setIsAuthenticated(true);
+            setAuthError(false);
+            sessionStorage.setItem("enigma_admin_auth", "true");
+        } else {
+            setAuthError(true);
+            setPasswordInput("");
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") handleLogin();
+    };
+
+    // Don't render anything while checking session
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            </div>
+        );
+    }
+
+    // Password gate
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-black flex items-center justify-center p-6">
+                <div className="w-full max-w-sm">
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600/20 to-pink-600/20 border border-purple-500/20 mb-4">
+                            <Lock className="w-8 h-8 text-purple-400" />
+                        </div>
+                        <h1 className="text-2xl font-bold text-white mb-1">Admin Access</h1>
+                        <p className="text-sm text-zinc-500">Enter the admin password to continue</p>
+                    </div>
+
+                    <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 backdrop-blur-sm">
+                        <input
+                            type="password"
+                            value={passwordInput}
+                            onChange={(e) => { setPasswordInput(e.target.value); setAuthError(false); }}
+                            onKeyDown={handleKeyDown}
+                            placeholder="Password"
+                            autoFocus
+                            className="w-full bg-black border border-zinc-700 p-3 rounded-lg text-white mb-3 focus:ring-2 focus:ring-purple-500 outline-none placeholder:text-zinc-600 text-center tracking-widest"
+                        />
+
+                        {authError && (
+                            <p className="text-red-400 text-xs text-center mb-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                                Incorrect password. Try again.
+                            </p>
+                        )}
+
+                        <button
+                            onClick={handleLogin}
+                            className="w-full py-3 bg-white text-black font-bold rounded-lg hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
+                        >
+                            <ShieldCheck className="w-4 h-4" /> Unlock
+                        </button>
+                    </div>
+
+                    <div className="text-center mt-6">
+                        <Link href="/" className="text-xs text-zinc-600 hover:text-zinc-400 transition-colors">
+                            ← Back to Home
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     const handleReset = async () => {
         await fetch('/api/game/reset', { method: 'POST' });
