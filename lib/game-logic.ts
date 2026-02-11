@@ -1,9 +1,9 @@
 export const BINGO_CONCEPTS = [
-    "Rainbow", "Electricity", "Jack Sparrow", "Penguin", "King Kong",
-    "Metal", "Human", "Coffin", "Plant", "Energy",
-    "Steam Engine", "Yin Yang", "Phoenix", "Mountain", "Titanic",
-    "Dragon", "Computer", "Game of Thrones", "Time Travel", "Music",
-    "Pizza", "Robot", "Universe", "Crypto Love", "Amazon",
+    "Rainbow", "Electricity", "Tree", "Ocean", "Volcano",
+    "Metal", "Human", "Cloud", "Plant", "Energy",
+    "Steam Engine", "Swamp", "Storm", "Mountain", "Ash",
+    "Dragon", "Computer", "Democracy", "Time Travel", "Music",
+    "Pizza", "Robot", "Universe", "Philosophy", "Internet",
     "Artificial Intelligence", "Space Station"
 ];
 
